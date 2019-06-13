@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.users.modules.mapper.primary.user.CrSysAreaMapper">
+  <resultMap id="BaseResultMap" type="com.common.entity.user.CrSysArea">
+    <id column="area_id" jdbcType="VARCHAR" property="areaId" />
+    <result column="area_code" jdbcType="VARCHAR" property="areaCode" />
+    <result column="parent_code" jdbcType="VARCHAR" property="parentCode" />
+    <result column="area_level" jdbcType="INTEGER" property="areaLevel" />
+    <result column="area_path" jdbcType="VARCHAR" property="areaPath" />
+    <result column="area_name" jdbcType="VARCHAR" property="areaName" />
+    <result column="full_name" jdbcType="VARCHAR" property="fullName" />
+    <result column="area_status" jdbcType="VARCHAR" property="areaStatus" />
+    <result column="sort_order" jdbcType="INTEGER" property="sortOrder" />
+    <result column="del_flag" jdbcType="SMALLINT" property="delFlag" />
+    <result column="area_pinyin" jdbcType="VARCHAR" property="areaPinyin" />
+    <result column="sub_count" jdbcType="SMALLINT" property="subCount" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    area_id, area_code, parent_code, area_level, area_path, area_name, full_name, area_status, 
+    sort_order, del_flag, area_pinyin, sub_count, create_time, update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.common.entity.user.CrSysAreaExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from cr_sys_area
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from cr_sys_area
+    where area_id = #{areaId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from cr_sys_area
+    where area_id = #{areaId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.common.entity.user.CrSysAreaExample">
+    delete from cr_sys_area
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.common.entity.user.CrSysArea">
+    insert into cr_sys_area (area_id, area_code, parent_code, 
+      area_level, area_path, area_name, 
+      full_name, area_status, sort_order, 
+      del_flag, area_pinyin, sub_count, 
+      create_time, update_time)
+    values (#{areaId,jdbcType=VARCHAR}, #{areaCode,jdbcType=VARCHAR}, #{parentCode,jdbcType=VARCHAR}, 
+      #{areaLevel,jdbcType=INTEGER}, #{areaPath,jdbcType=VARCHAR}, #{areaName,jdbcType=VARCHAR}, 
+      #{fullName,jdbcType=VARCHAR}, #{areaStatus,jdbcType=VARCHAR}, #{sortOrder,jdbcType=INTEGER}, 
+      #{delFlag,jdbcType=SMALLINT}, #{areaPinyin,jdbcType=VARCHAR}, #{subCount,jdbcType=SMALLINT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.common.entity.user.CrSysArea">
+    insert into cr_sys_area
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="areaId != null">
+        area_id,
+      </if>
+      <if test="areaCode != null">
+        area_code,
+      </if>
+      <if test="parentCode != null">
+        parent_code,
+      </if>
+      <if test="areaLevel != null">
+        area_level,
+      </if>
+      <if test="areaPath != null">
+        area_path,
+      </if>
+      <if test="areaName != null">
+        area_name,
+      </if>
+      <if test="fullName != null">
+        full_name,
+      </if>
+      <if test="areaStatus != null">
+        area_status,
+      </if>
+      <if test="sortOrder != null">
+        sort_order,
+      </if>
+      <if test="delFlag != null">
+        del_flag,
+      </if>
+      <if test="areaPinyin != null">
+        area_pinyin,
+      </if>
+      <if test="subCount != null">
+        sub_count,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="areaId != null">
+        #{areaId,jdbcType=VARCHAR},
+      </if>
+      <if test="areaCode != null">
+        #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="parentCode != null">
+        #{parentCode,jdbcType=VARCHAR},
+      </if>
+      <if test="areaLevel != null">
+        #{areaLevel,jdbcType=INTEGER},
+      </if>
+      <if test="areaPath != null">
+        #{areaPath,jdbcType=VARCHAR},
+      </if>
+      <if test="areaName != null">
+        #{areaName,jdbcType=VARCHAR},
+      </if>
+      <if test="fullName != null">
+        #{fullName,jdbcType=VARCHAR},
+      </if>
+      <if test="areaStatus != null">
+        #{areaStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="sortOrder != null">
+        #{sortOrder,jdbcType=INTEGER},
+      </if>
+      <if test="delFlag != null">
+        #{delFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="areaPinyin != null">
+        #{areaPinyin,jdbcType=VARCHAR},
+      </if>
+      <if test="subCount != null">
+        #{subCount,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.common.entity.user.CrSysAreaExample" resultType="java.lang.Long">
+    select count(*) from cr_sys_area
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update cr_sys_area
+    <set>
+      <if test="record.areaId != null">
+        area_id = #{record.areaId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.areaCode != null">
+        area_code = #{record.areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.parentCode != null">
+        parent_code = #{record.parentCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.areaLevel != null">
+        area_level = #{record.areaLevel,jdbcType=INTEGER},
+      </if>
+      <if test="record.areaPath != null">
+        area_path = #{record.areaPath,jdbcType=VARCHAR},
+      </if>
+      <if test="record.areaName != null">
+        area_name = #{record.areaName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fullName != null">
+        full_name = #{record.fullName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.areaStatus != null">
+        area_status = #{record.areaStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sortOrder != null">
+        sort_order = #{record.sortOrder,jdbcType=INTEGER},
+      </if>
+      <if test="record.delFlag != null">
+        del_flag = #{record.delFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="record.areaPinyin != null">
+        area_pinyin = #{record.areaPinyin,jdbcType=VARCHAR},
+      </if>
+      <if test="record.subCount != null">
+        sub_count = #{record.subCount,jdbcType=SMALLINT},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update cr_sys_area
+    set area_id = #{record.areaId,jdbcType=VARCHAR},
+      area_code = #{record.areaCode,jdbcType=VARCHAR},
+      parent_code = #{record.parentCode,jdbcType=VARCHAR},
+      area_level = #{record.areaLevel,jdbcType=INTEGER},
+      area_path = #{record.areaPath,jdbcType=VARCHAR},
+      area_name = #{record.areaName,jdbcType=VARCHAR},
+      full_name = #{record.fullName,jdbcType=VARCHAR},
+      area_status = #{record.areaStatus,jdbcType=VARCHAR},
+      sort_order = #{record.sortOrder,jdbcType=INTEGER},
+      del_flag = #{record.delFlag,jdbcType=SMALLINT},
+      area_pinyin = #{record.areaPinyin,jdbcType=VARCHAR},
+      sub_count = #{record.subCount,jdbcType=SMALLINT},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.common.entity.user.CrSysArea">
+    update cr_sys_area
+    <set>
+      <if test="areaCode != null">
+        area_code = #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="parentCode != null">
+        parent_code = #{parentCode,jdbcType=VARCHAR},
+      </if>
+      <if test="areaLevel != null">
+        area_level = #{areaLevel,jdbcType=INTEGER},
+      </if>
+      <if test="areaPath != null">
+        area_path = #{areaPath,jdbcType=VARCHAR},
+      </if>
+      <if test="areaName != null">
+        area_name = #{areaName,jdbcType=VARCHAR},
+      </if>
+      <if test="fullName != null">
+        full_name = #{fullName,jdbcType=VARCHAR},
+      </if>
+      <if test="areaStatus != null">
+        area_status = #{areaStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="sortOrder != null">
+        sort_order = #{sortOrder,jdbcType=INTEGER},
+      </if>
+      <if test="delFlag != null">
+        del_flag = #{delFlag,jdbcType=SMALLINT},
+      </if>
+      <if test="areaPinyin != null">
+        area_pinyin = #{areaPinyin,jdbcType=VARCHAR},
+      </if>
+      <if test="subCount != null">
+        sub_count = #{subCount,jdbcType=SMALLINT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where area_id = #{areaId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.common.entity.user.CrSysArea">
+    update cr_sys_area
+    set area_code = #{areaCode,jdbcType=VARCHAR},
+      parent_code = #{parentCode,jdbcType=VARCHAR},
+      area_level = #{areaLevel,jdbcType=INTEGER},
+      area_path = #{areaPath,jdbcType=VARCHAR},
+      area_name = #{areaName,jdbcType=VARCHAR},
+      full_name = #{fullName,jdbcType=VARCHAR},
+      area_status = #{areaStatus,jdbcType=VARCHAR},
+      sort_order = #{sortOrder,jdbcType=INTEGER},
+      del_flag = #{delFlag,jdbcType=SMALLINT},
+      area_pinyin = #{areaPinyin,jdbcType=VARCHAR},
+      sub_count = #{subCount,jdbcType=SMALLINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where area_id = #{areaId,jdbcType=VARCHAR}
+  </update>
+</mapper>

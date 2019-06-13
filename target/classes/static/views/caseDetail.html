@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+    <title></title>
+</head>
+<body>
+<div style="margin:0 1.3em">
+    <div th:each="item,itemStat:${caseModel.list}" style="margin-top: 1em;">
+        <div>
+            <p th:utext="${item.caseTheme}" style="color:#3DAD80;font-size: 15px;margin-bottom: 10px"></p>
+            <p th:utext="${item.caseContent}" style="font-size:14px;margin-top:0;color:#A4A4A4;"></p>
+        </div>
+    </div>
+
+</div>
+</body>
+<style>
+    html, body {
+        width: 100%;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        margin: 0;
+        position: fixed;
+        background-color: #F2FFF8;
+    }
+</style>
+</html>

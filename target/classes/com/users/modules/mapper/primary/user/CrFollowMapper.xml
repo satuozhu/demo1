@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.users.modules.mapper.primary.user.CrFollowMapper">
+
+  <!-- 通过关注者ID查询医生信息 -->
+  <select id="selectDoctorInfoByFollowerId" parameterType="java.lang.Long" resultType="com.users.modules.user.responseBody.CrFollowRespBody">
+
+    SELECT
+      cf.`id`,
+      cf.`follower_id` as followerId,
+      cf.`following_id` AS followingId,
+      cu.`user_name` AS userName,
+      cdi.`doctor_id` AS doctorId,
+      cdi.`level`,
+      cdi.`introduce`
+    FROM cr_follow cf
+    LEFT JOIN cr_user cu ON cu.`id` = cf.`following_id`
+    LEFT JOIN cr_doctor_info cdi ON cdi.`doctor_id` = cu.`id`
+    WHERE cf.`following_type` = 0 AND cf.`follower_id` = #{followerId,jdbcType=BIGINT}
+
+  </select>
+
+  <!-- 通过关注者id查询关注者实体id -->
+  <select id="selectByFolloerId" parameterType="java.lang.Long" resultType="com.users.modules.user.responseBody.CrFollowRespBody">
+    SELECT
+      cf.`id`,
+      cf.`follower_id` as followerId,
+      cf.`following_id` AS followingId
+    FROM cr_follow cf
+    WHERE cf.`following_type` = 2 AND cf.`follower_id` = #{followerId,jdbcType=BIGINT}
+
+  </select>
+  
+  <!-- 通过作者ID查询网文 -->
+  <!--<select id="selectArticleByAuthorId" parameterType="java.lang.Long" resultType="com.users.modules.user.responseBody.CrFollowRespBody">
+    SELECT ca.`article_comment_count`,ca.`article_good_cnt`,ca.`article_img1_url`,ca.`article_title`
+    FROM cr_article ca
+    WHERE ca.`article_status` = 0 AND ca.`article_author_id` = #{articleAuthorId,jdbcType="BIGINT"}
+  </select>-->
+
+</mapper>

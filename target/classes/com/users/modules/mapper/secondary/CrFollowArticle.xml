@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.users.modules.mapper.secondary.CrFollowArticleDAO">
+
+  <!-- 通过作者ID查询网文 -->
+  <select id="selectArticleByAuthorId" parameterType="java.lang.String" resultType="com.users.modules.user.responseBody.CrArticleRespBody">
+    SELECT
+    ca.`id` AS id,
+    ca.`article_comment_count` AS articleCommentCount,
+    ca.`article_good_cnt` AS articleGoodCnt,
+    ca.`article_img1_url` AS articleImg1Url,
+    ca.`article_title` AS articleTitle,
+    ca.`article_view_count` AS articleViewCount,
+    ca.`article_author_id` AS articleAuthorId,
+    ca.`article_status` AS articleStatus,
+    ca.`article_collect_cnt` AS articleCollectcnt,
+    ca.`article_permalink` AS articlePermalink
+    FROM cr_article ca
+    WHERE ca.`article_status` = 0 AND ca.`article_author_id` = #{articleAuthorId,jdbcType=VARCHAR}
+  </select>
+
+</mapper>

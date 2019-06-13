@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+</head>
+<body>
+<div class="wodeliuyan">
+    <div class="ligen" th:each="item,itemStat:${messageModel.list}">
+		<span id="lliuyan">
+		  给“<span id="name" th:text="${item.doctor.userName}"></span>”医生留言
+		</span>
+        <span id="timethird">&nbsp;&nbsp;<span style="font-size: 14px" th:text="${#dates.format(item.createTime,'yyyy-MM-dd')}"></span></span>
+        <p id="lliuyanneirong"> <span th:text="${item.content}"></span></p>
+        <!--<div id="triangle"></div>-->
+        <div id="rectangle" th:each="item2,item2Stat:${item.children}">
+            <div id="nav">
+                <img th:src="${item2.author.headPic}" width="50" height="50">
+            </div>
+
+            <div id="title">
+        		<span id="lhuifu">
+                    <span id="name" th:text="${item2.author.userName}"></span>”医生回复
+        		</span>
+                <span id="space1"></span>
+                <span id="timefourth">-<span th:text="${#dates.format(item2.createTime,'yyyy-MM-dd')}"></span></span>
+
+            </div>
+            <p id="lhuifuneirong"><span th:text="${item2.content}"></span></p>
+        </div>
+        <div id="icon">
+            <img src="https://crimgs.oss-cn-shenzhen.aliyuncs.com/icon/2019-05-29/6d8ed582cf4f411e98ae9e76893131ff-icon_reviews.png?Expires=1577372232&OSSAccessKeyId=LTAIxKsDiZWFoUzP&Signature=guC3Iwo4woG77T08VmD8RNFZ4wc%3D" width="20" height="20" align="top">
+            <span id="reviews" th:text="${item.replyCnt}"></span>
+            <span id="space1"></span>
+            <img src="https://crimgs.oss-cn-shenzhen.aliyuncs.com/icon/2019-05-29/9939d4c79a764bc9aac2a0b56e24507b-icon_digg.png?Expires=1577372204&OSSAccessKeyId=LTAIxKsDiZWFoUzP&Signature=fxudJ9Y8Zb4R7QM1HluZI8nYu8Y%3D" width="20" height="20" align="top">
+            <span id="digg" th:text="${item.goodCnt}"></span>
+        </div>
+        <hr>
+    </div>
+    <div class="meifang"></div>
+</div>
+</body>
+<style type="text/css">
+    html, body {
+        width:100%;
+        height: 100%;
+        margin: 0;
+        position:fixed;
+        background-color:#FFFFFF;
+        overflow-y:scroll;
+        overflow-x: hidden;
+    }
+    *{
+        font-size: 14px;
+    }
+    .wodeliuyan{
+        width: 93%;
+        border-left: 1px solid #e6e6e6;
+        border-right: 1px solid #e6e6e6;
+        border-bottom: 1px solid #e6e6e6;
+        margin-left: 0.5em;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        padding: 0 0.5em;
+    }
+    #zliuyan{
+        width: 100%;
+        height: 25px;
+        color: #A4A4A4;
+        font-family: SourceHanSansCN-Regular;
+    }
+
+    #xliuyan{
+        width: 100%;
+        height: 25px;
+        margin-right: 629px;
+        color: #A4A4A4;
+        font-family: SourceHanSansCN-Regular;
+    }
+
+    #lliuyan{
+        width: 206px;
+        height: 25px;
+        color: #A4A4A4;
+        font-family: SourceHanSansCN-Regular;
+    }
+
+    #lhuifu{
+        width: 179px;
+        height: 26px;
+        color: #A4A4A4;
+    }
+
+    #timefirst{
+        width: 97px;
+        height: 23px;
+
+        color: #A4A4A4;
+    }
+
+    #timesecond{
+        width: 111px;
+        height: 23px;
+        color: #A4A4A4;
+    }
+
+    #timethird{
+        width: 111px;
+        height: 23px;
+        color: #A4A4A4;
+    }
+
+    #timefourth{
+        width: 111px;
+        height: 23px;
+        color: #A4A4A4;
+    }
+
+
+    #zliuyanneirong{
+        width: 947px;
+        height: 60px;
+        margin-top: 43px;
+        margin-bottom: 55px;
+        font-family: SourceHanSansCN-Regular;
+        color: #A4A4A4;
+    }
+
+    #xliuyanneirong{
+        width: 947px;
+        height: 60px;
+        margin-top: 43px;
+        margin-bottom: 55px;
+        font-family: SourceHanSansCN-Regular;
+
+        color: #A4A4A4;
+    }
+
+    #lliuyanneirong{
+        width: 100%;
+        height: 24px;
+        margin-top: 20px;
+        font-family: SourceHanSansCN-Regular;
+        color: #A4A4A4;
+    }
+    #lhuifuneirong{
+        width: 100%;
+        color: #A4A4A4;
+    }
+
+    #name{
+        color: #59B586;
+    }
+
+    hr{
+        background-color: #D4D4D4;
+        width: 950px;
+        border: none;
+        height: 1px;
+    }
+    .xuli{
+        margin-top: 31px;
+    }
+    .ligen{
+        margin-top: 31px;
+        overflow: hidden;
+    }
+
+    #triangle{
+        width: 0px;
+        height: 0px;
+        border-width: 10px;
+        border-style: solid;
+        border-color: transparent transparent #F9F9F9 transparent;
+    }
+    #rectangle{
+        width: 100%;
+        background-color: #F9F9F9;
+        padding: 20px 0 15px 10px;
+    }
+    #nav{
+        float: left;
+        border-radius: 100%;
+        background-color: #F2FFF8;
+        padding-right: 10px;
+    }
+    #nav img{ border-radius: 50%; }
+    #title{
+        width: 100%;
+        float: none;
+    }
+    #title name{
+        font-weight: bold;
+        font-family: Microsoft YaHei;
+        color: #A4A4A4;
+    }
+    #space1{
+        display: inline-block;
+        width: 1%;
+    }
+
+    #icon{
+        margin-top: 16px;
+        padding-left: 76%;
+        width: 110px;
+    }
+</style>
+</html>

@@ -1,0 +1,682 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.users.modules.mapper.primary.user.AppointmentMapper">
+
+    <!-- 查询推送的消息 -->
+    <select id="selectCrSysMessageList" parameterType="com.users.modules.user.requestBody.crAppointment.CrSysMessageListReqBody"
+            resultType="com.common.entity.user.CrSysMessage">
+        SELECT
+          `id`,
+          `msg_type` AS msgType,
+          `msg_title` AS msgTitle,
+          `msg_content` AS msgContent,
+          `msg_status` AS msgStatus,
+          `user_id` AS userId,
+          `bean_id` AS beanId,
+          `create_time` AS createTime,
+          `update_time` AS updateTime
+        FROM
+          `cr_sys_message`
+        WHERE (`user_id` = #{userId} OR `user_id` = -1)
+        <!--AND `msg_type` = #{msgType}-->
+        ORDER BY `create_time` DESC
+    </select>
+
+    <!-- 更新消息状态为已读 resultType="Integer" -->
+    <update id="updateCrSysMessage" parameterType="com.users.modules.user.requestBody.crAppointment.UpdateCrSysMessageReqBody">
+        UPDATE `cr_sys_message`
+        SET `msg_status` = 1, `update_time` = UNIX_TIMESTAMP()*1000
+        WHERE `id` = #{messageId}
+--          AND `user_id` = #{userId}
+    </update>
+
+    <!--根据医生ID查询预约信息-->
+    <select id="selectAppointmentByDoctorId" parameterType="java.lang.Long"
+            resultType="com.users.modules.user.responseBody.crAppointment.AppointmentByDoctorIdResBody">
+        SELECT
+            a.`id`,
+            a.`user_id` AS userId,
+            a.`doctor_id` AS doctorId,
+            a.`house_id` AS houseId,
+            a.`appointment_time_id` AS appointmentTimeId,
+            a.`cause`,
+            a.`consult_price` AS consultPrice,
+            a.`status`,
+--             a.`prescription_id` AS prescriptionId,
+            a.`express_id` AS expressId,
+            a.`sum_price` AS sumPrice,
+            a.`score`,
+            a.`ex_status` AS exStatus,
+            a.`again_status` AS againStatus,
+            a.`appointment_id` AS appointmentId,
+            a.`date` AS createTime,
+            a.`update_time` AS updateTime,
+            <!--数据库date：2019-05-15，返回map：1557849600000，返回实体类Date：1557849600000，返回实体类String：2019-05-15-->
+            att.`date` AS timeDate,
+            <!--数据库date：2019-05-15，返回map：2019-05-15，返回实体类Date：1557849600000，返回实体类String：2019-05-15-->
+            --  DATE_FORMAT(att.`date`, '%Y-%m-%d') AS timeDate,
+            att.`time_slot` AS timeSlot
+        FROM
+          `cr_appointment` a
+        LEFT JOIN `cr_appointment_time` att ON att.`id` = a.`appointment_time_id` AND att.`doctor_id` = #{doctorId} AND att.`enable` = 1 AND att.`status` = 1
+        WHERE
+--         att.`date` = DATE(NOW()) AND
+        a.`doctor_id` = #{doctorId} AND a.`status` = 2
+        <!--按预约时间升序-->
+--         ORDER BY a.`appointment_time_id` ASC
+        <!--按创建时间降序-->
+        ORDER BY a.`date` DESC
+    </select>
+
+<!-- 用户积分（有则更新，无则添加） resultType="Integer" -->
+    <update id="insertOrUpdateCrIntegral">
+        UPDATE `cr_integral`
+        SET `totle_score` = `totle_score` + #{score}
+        WHERE `user_id` = #{userId}
+    </update>
+    <!--<insert id="insertOrUpdateCrIntegral">-->
+        <!--<selectKey keyProperty="count" resultType="int" order="BEFORE">-->
+            <!--SELECT count(*) FROM `cr_integral` WHERE `user_id` = #{userId}-->
+        <!--</selectKey>-->
+        <!--<if test="count > 0">-->
+            <!--UPDATE `cr_integral`-->
+            <!--SET `totle_score` = `totle_score` + #{score}-->
+            <!--WHERE `user_id` = #{userId}-->
+        <!--</if>-->
+        <!--<if test="count == 0">-->
+            <!--INSERT INTO `cr_integral` (`user_id`, `totle_score`)-->
+            <!--VALUES (#{userId}, #{score})-->
+        <!--</if>-->
+    <!--</insert>-->
+
+    <!-- 分页查询最近30天的积分明细 -->
+    <select id="selectCrIntegralDetailList" parameterType="com.users.modules.user.requestBody.crAppointment.CrIntegralDetailListReqBody"
+            resultType="com.users.modules.user.responseBody.crAppointment.CrIntegralDetailResBody">
+        SELECT
+            t.`id`,
+            t.`user_id` AS userId,
+            t.`dict_type` AS dictType,
+            t.`dict_name` AS dictName,
+            t.`score`,
+--             t.`detail`,
+            t.`create_time` AS createTime
+        FROM
+          `cr_integral_detail` AS t
+        WHERE DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= FROM_UNIXTIME(t.`create_time`/1000,'%Y-%m-%d')
+--         DATE_FORMAT(FROM_UNIXTIME(t.`create_time`/1000),'%Y-%m-%d')
+          AND `user_id` = #{userId}
+        ORDER BY t.`create_time` DESC
+    </select>
+
+    <!-- 医生好评率top3 -->
+    <select id="selectDoctorInfoTop" resultType="com.users.modules.user.responseBody.crAppointment.SelectDoctorInfoTopResBody">
+        SELECT
+            d.`id`,
+            d.`doctor_id` AS doctorId,
+            d.`hospital`,
+            d.`section`,
+            d.`level`,
+            d.`forte`,
+            d.`introduce`,
+            d.`consult_price` AS consultPrice,
+            d.`star_class` AS starClass,
+            d.`patient_num` AS patientNum,
+            d.`praise_rate` AS praiseRate,
+            -- d.`create_time` AS createTime,
+            -- d.`update_time` AS updateTime,
+            u.`user_name` AS doctorName,
+            u.`head_pic` AS headPic
+        FROM
+        `cr_doctor_info` d
+        LEFT JOIN `cr_user` u ON u.`id` = d.`doctor_id` AND u.`flag` = 1 <!-- flag用户类型(0:普通用户,1:医生) -->
+        ORDER BY d.`praise_rate` DESC
+        LIMIT 3
+    </select>
+
+    <!-- 根据医生Id查询医生信息和详细信息 -->
+    <select id="selectDoctorInfoById"
+            parameterType="java.lang.Long"
+            resultType="com.users.modules.user.responseBody.crAppointment.SelectDoctorInfoTopResBody">
+        SELECT
+        d.`id`,
+        d.`doctor_id` AS doctorId,
+        d.`hospital`,
+        d.`section`,
+        d.`level`,
+        d.`forte`,
+        d.`introduce`,
+        d.`consult_price` AS consultPrice,
+        d.`star_class` AS starClass,
+        d.`patient_num` AS patientNum,
+        d.`praise_rate` AS praiseRate,
+        -- d.`create_time` AS createTime,
+        -- d.`update_time` AS updateTime,
+        u.`user_name` AS doctorName,
+        u.`head_pic` AS headPic
+        FROM
+        `cr_doctor_info` d
+        LEFT JOIN `cr_user` u ON u.`id` = d.`doctor_id` AND u.`flag` = 1 <!-- flag用户类型(0:普通用户,1:医生) -->
+        WHERE u.id = #{userId}
+    </select>
+
+    <!-- 搜索医生列表 -->
+    <select id="searchDoctorInfoList" parameterType="com.users.modules.user.requestBody.crAppointment.SearchDoctorInfoReqBody"
+            resultType="com.users.modules.user.responseBody.crAppointment.SearchDoctorInfoResBody">
+        SELECT
+        d.`id`,
+        d.`doctor_id` AS doctorId,
+        d.`hospital`,
+        d.`section`,
+        d.`level`,
+        d.`forte`,
+        d.`introduce`,
+        d.`consult_price` AS consultPrice,
+        d.`star_class` AS starClass,
+        d.`patient_num` AS patientNum,
+        d.`praise_rate` AS praiseRate,
+        -- d.`create_time` AS createTime,
+        -- d.`update_time` AS updateTime,
+        u.`user_name` AS doctorName,
+        u.`head_pic` AS headPic
+        FROM
+        `cr_doctor_info` d
+        LEFT JOIN `cr_user` u ON u.`id` = d.`doctor_id` AND u.`flag` = 1 <!-- flag用户类型(0:普通用户,1:医生) -->
+        <!-- 若没有查询条件，where不会显示 -->
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <!--EXISTS-->
+            <!--(-->
+            <!--&lt;!&ndash;查询明天或以后已经设置了预约时间段，空闲的医生&ndash;&gt;-->
+            <!--&lt;!&ndash; NOW()、 DATE(NOW())、 DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%S') &ndash;&gt;-->
+            <!--SELECT DISTINCT att.`doctor_id` AS doctorId FROM `cr_appointment_time` att-->
+            <!--WHERE att.`date` &gt; DATE(NOW()) AND att.enable = 1 AND att.status = 0 AND att.`doctor_id` = d.`doctor_id`-->
+            <!--)-->
+            <if test="doctorName != null and doctorName != ''">
+                AND (u.`user_name` LIKE CONCAT('%',#{doctorName},'%') OR d.`forte` LIKE CONCAT('%',#{doctorName},'%'))
+            </if>
+        </trim>
+        ORDER BY d.`patient_num` DESC
+    </select>
+
+    <!-- 查询正常运转的诊室（医生-诊室-时间段） -->
+    <select id="selectNormalHouseList" parameterType="com.users.modules.user.requestBody.crAppointment.NormalHouseListReqBody"
+            resultType="com.users.modules.user.responseBody.crAppointment.SelectNormalHouseListResBody">
+        SELECT
+            h.`id` AS houseId,
+            h.`pub_server_ip` AS pubServerIp,
+            h.`lan_server_ip` AS lanServerIp,
+            h.`area_id` AS areaId,
+            h.`area_path` AS areaPath,
+            h.`server_mac` AS serverMac,
+            h.`name`,
+            h.`location`,
+            h.`longitude`,
+            h.`latitude`,
+            h.`number`,
+            h.`status`
+        FROM `cr_house` h
+        WHERE h.`status` = 0
+            <if test="houseName != null and houseName != ''">
+                AND h.`location` LIKE CONCAT('%',#{houseName},'%')
+            </if>
+            <if test="areaId != null and areaId != ''">
+                AND h.`area_path` LIKE CONCAT('%',#{areaId},'%')
+            </if>
+        ORDER BY h.`number` DESC
+
+        <!--SELECT-->
+            <!--h.`id` AS houseId,-->
+            <!--&lt;!&ndash;h.`pub_server_ip` AS pubServerIp,&ndash;&gt;-->
+            <!--&lt;!&ndash;h.`lan_server_ip` AS lanServerIp,&ndash;&gt;-->
+            <!--h.`area_id` AS areaId,-->
+            <!--&lt;!&ndash;h.`server_mac` AS serverMac,&ndash;&gt;-->
+            <!--&lt;!&ndash;concat(sa.`full_name`,h.`location`) AS locationFullName,&ndash;&gt;-->
+            <!--h.`location`,-->
+            <!--&lt;!&ndash;h.`number`,&ndash;&gt;-->
+            <!--&lt;!&ndash;h.`status`,&ndash;&gt;-->
+            <!--&lt;!&ndash;sa.`area_name` AS areaName,&ndash;&gt;-->
+            <!--sa.`full_name` AS fullName-->
+        <!--FROM `cr_house` h-->
+            <!--LEFT JOIN `cr_sys_area` sa ON sa.`area_code` = h.`area_id` AND sa.`area_level` = 3 &lt;!&ndash; area_level区域级别:1省2市3区 &ndash;&gt;-->
+        <!--WHERE h.`status` = 0-->
+            <!--<if test="houseName != null and houseName != ''">-->
+                <!--AND h.`location` LIKE CONCAT('%',#{houseName},'%')-->
+            <!--</if>-->
+            <!--<if test="areaId != null and areaId != 0">-->
+                <!--&lt;!&ndash;AND h.`area_id` = #{areaId}&ndash;&gt;-->
+                <!--AND EXISTS (-->
+                    <!--SELECT-->
+                        <!--csa.`area_id` AS areaId-->
+                    <!--FROM-->
+                        <!--`cr_sys_area` AS csa-->
+                    <!--WHERE csa.`parent_code` = #{areaId} AND csa.`area_level` = 3 AND csa.`area_id` = h.`area_id`-->
+                <!--)-->
+            <!--</if>-->
+        <!--ORDER BY h.`number` DESC-->
+    </select>
+
+    <!-- 查询正常运转的诊室（医生-时间段-诊室） -->
+    <select id="selectNormalHouse" parameterType="com.users.modules.user.requestBody.crAppointment.NormalHouseReqBody"
+            resultType="com.users.modules.user.responseBody.crAppointment.SelectNormalHouseResBody">
+        SELECT
+            h.`id` AS houseId,
+            h.`pub_server_ip` AS pubServerIp,
+            h.`lan_server_ip` AS lanServerIp,
+            h.`area_id` AS areaId,
+            h.`area_path` AS areaPath,
+            h.`server_mac` AS serverMac,
+            h.`name`,
+            h.`location`,
+            h.`longitude`,
+            h.`latitude`,
+            h.`number`,
+            h.`status`
+        FROM `cr_house` h
+        WHERE h.`status` = 0
+            AND NOT EXISTS
+            (
+                SELECT ca.`house_id` FROM `cr_appointment` ca WHERE EXISTS
+                (
+                    SELECT cat.`id` FROM `cr_appointment_time` cat WHERE cat.`date` = #{date} AND cat.`time_slot` = #{timeSlot} AND cat.`id` = ca.`appointment_time_id`
+                )
+                AND ca.`house_id` = h.`id`
+            )
+            <if test="houseName != null and houseName != ''">
+              AND h.`location` LIKE CONCAT('%',#{houseName},'%')
+            </if>
+            <if test="areaId != null and areaId != ''">
+                AND h.`area_path` LIKE CONCAT('%',#{areaId},'%')
+            </if>
+        ORDER BY h.`number` DESC
+    </select>
+
+    <!-- 查询医生和诊室某一天的所有预约时间（医生-诊室-时间段） -->
+    <select id="selectDoctorAppointmentTime" parameterType="java.util.Map"
+            resultType="com.common.entity.user.CrAppointmentTime">
+        SELECT
+            `id`,
+            `doctor_id` AS doctorId,
+            `date`,
+            `time_slot` AS timeSlot,
+            `status`,
+            `create_time` AS createTime,
+            `update_time` AS updateTime,
+            `enable`
+        FROM `cr_appointment_time`
+        WHERE `date` = #{date} AND `doctor_id` = #{doctorId}
+    </select>
+
+    <!-- 查询医生和诊室某一天的所有预约时间（医生-诊室-时间段） -->
+    <select id="selectDoctorHouseTime" parameterType="java.util.Map"
+            resultType="com.users.modules.user.responseBody.crAppointment.DoctorHouseTimeResBody">
+        SELECT
+            a.`id`,
+            a.`doctor_id` AS doctorId,
+            <!--数据库date：2019-05-15，返回map：1557849600000，返回实体类Date：1557849600000，返回实体类String：2019-05-15-->
+            a.`date` AS timeDate,
+            <!--数据库date：2019-05-15，返回map：2019-05-15，返回实体类Date：1557849600000，返回实体类String：2019-05-15-->
+--             DATE_FORMAT(a.`date`, '%Y-%m-%d') AS timeDate,
+            a.`time_slot` AS timeSlot,
+            --   a.`status` AS astatus,
+            --   a.`create_time` AS createTime,
+            --   a.`update_time` AS updateTime,
+            --   a.`enable`,
+            --   h.`id`,
+            h.`house_id` AS houseId,
+            --   h.`date`,
+            --   h.`time_slot` AS timeSlot,
+            --   h.`status` AS hstatus,
+            --   h.`create_time` AS createTime,
+            --   h.`update_time` AS updateTime,
+            --   h.`enable`,
+            (CASE WHEN (a.`status` = 1 OR h.`status` = 1) THEN true ELSE false END) AS `status`,
+--             (CASE WHEN (a.`status` = 1 OR h.`status` = 1) THEN 1 ELSE 0 END) AS `status`,
+            a.`enable`
+        -- from `cr_appointment_time` a
+        FROM (SELECT `id`,`doctor_id`,`date`,`time_slot`,`status`,`enable` FROM `cr_appointment_time` WHERE `doctor_id` = #{doctorId} AND `date` = #{date}) a
+        LEFT JOIN
+        (
+            SELECT
+                a.`id`,
+                a.`doctor_id`,
+                a.`date`,
+                a.`time_slot`,
+                a.`status`,
+                a.`enable`,
+                #{houseId} AS `house_id`
+            FROM `cr_appointment_time` a
+            WHERE a.`date` = #{date}
+            AND EXISTS(
+              SELECT ca.`appointment_time_id` FROM `cr_appointment` ca WHERE ca.`house_id` = #{houseId} AND ca.`appointment_time_id` = a.`id`
+            )
+        )h ON h.`time_slot` = a.`time_slot`
+        -- where a.`doctor_id` = 1 AND a.`date` = '2019-05-15'
+        ORDER BY a.`time_slot` ASC
+
+        <!--SELECT-->
+          <!--a.`id`,-->
+          <!--a.`doctor_id` AS doctorId,-->
+        <!--&#45;&#45;   a.`date`,-->
+          <!--&lt;!&ndash;因为返回的是map，不是实体类，所以需要转换下时间&ndash;&gt;-->
+          <!--DATE_FORMAT(a.`date`, '%Y-%m-%d') AS timeDate,-->
+          <!--a.`time_slot` AS timeSlot,-->
+        <!--&#45;&#45;   a.`status` AS astatus,-->
+        <!--&#45;&#45;   a.`create_time` AS createTime,-->
+        <!--&#45;&#45;   a.`update_time` AS updateTime,-->
+        <!--&#45;&#45;   a.`enable`,-->
+        <!--&#45;&#45;   h.`id`,-->
+          <!--h.`house_id` AS houseId,-->
+        <!--&#45;&#45;   h.`date`,-->
+        <!--&#45;&#45;   h.`time_slot` AS timeSlot,-->
+        <!--&#45;&#45;   h.`status` AS hstatus,-->
+        <!--&#45;&#45;   h.`create_time` AS createTime,-->
+        <!--&#45;&#45;   h.`update_time` AS updateTime,-->
+        <!--&#45;&#45;   h.`enable`,-->
+            <!--(CASE WHEN (a.`status` = 0 AND h.`status` = 0) THEN 0 ELSE 1 END) AS `status`,-->
+            <!--(CASE WHEN (a.`enable` = 1 AND h.`enable` = 1) THEN 1 ELSE 0 END) AS `enable`-->
+        <!--FROM `cr_appointment_time` a-->
+        <!--LEFT JOIN `cr_house_time` h ON h.`time_slot` = a.`time_slot` AND h.`house_id` = #{houseId} AND h.`date` = #{date}-->
+        <!--WHERE a.`doctor_id` = #{doctorId} AND a.`date` = #{date}-->
+        <!--ORDER BY a.`time_slot` ASC-->
+    </select>
+
+    <!-- 查看用户在该日期、时间段是否已有预约 -->
+    <select id="selectWhetherAppointment" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT
+          COUNT(1)
+        FROM
+          `cr_appointment` ca
+        WHERE ca.`user_id` = #{userId} AND
+        EXISTS(
+          SELECT cat.`id` FROM `cr_appointment_time` cat
+            WHERE cat.`date` = #{date} AND cat.`time_slot` = #{timeSlot}
+            AND cat.`status` = 1 AND cat.`enable` = 1 AND cat.`id` = ca.`appointment_time_id`
+        )
+    </select>
+
+    <!--&lt;!&ndash; 查看用户在该日期、时间段是否已有复诊 &ndash;&gt;-->
+    <!--<select id="selectWhetherAppointmentAgain" parameterType="java.util.Map" resultType="java.lang.Integer">-->
+        <!--SELECT-->
+          <!--COUNT(1)-->
+        <!--FROM-->
+          <!--`cr_appointment_again` caa-->
+        <!--WHERE caa.`user_id` = #{userId} AND-->
+        <!--EXISTS(-->
+          <!--SELECT cat.`id` FROM `cr_appointment_time` cat-->
+            <!--WHERE cat.`date` = #{date} AND cat.`time_slot` = #{timeSlot}-->
+            <!--AND cat.`status` = 1 AND cat.`enable` = 1 AND cat.`id` = caa.`appointment_time_id`-->
+        <!--)-->
+    <!--</select>-->
+
+    <!-- 根据预约ID查看预约信息 -->
+    <select id="selectAppointmentById" parameterType="java.lang.Long"
+            resultType="com.users.modules.user.responseBody.crAppointment.AppointmentByIdResBody">
+        SELECT
+            a.`id`,
+            a.`user_id` AS userId,
+            a.`doctor_id` AS doctorId,
+            a.`house_id` AS houseId,
+            a.`appointment_time_id` AS appointmentTimeId,
+            a.`cause`,
+            a.`consult_price` AS consultPrice,
+            a.`status`,
+--             a.`prescription_id` AS prescriptionId,
+            a.`express_id` AS expressId,
+            a.`sum_price` AS sumPrice,
+            a.`score`,
+            a.`ex_status` AS exStatus,
+            a.`again_status` AS againStatus,
+            a.`appointment_id` AS appointmentId,
+            a.`date` AS createTime,
+            a.`update_time` AS updateTime,
+            --         u.`user_name` AS userName,
+            d.`user_name` AS doctorName,
+            <!--数据库date：2019-05-15，返回map：1557849600000，返回实体类Date：1557849600000，返回实体类String：2019-05-15-->
+            att.`date` AS timeDate,
+            <!--数据库date：2019-05-15，返回map：2019-05-15，返回实体类Date：1557849600000，返回实体类String：2019-05-15-->
+            --  DATE_FORMAT(att.`date`, '%Y-%m-%d') AS timeDate,
+            att.`time_slot` AS timeSlot,
+            --         h.`pub_server_ip` AS pubServerIp,
+            --         h.`lan_server_ip` AS lanServerIp,
+            --         h.`area_id` AS areaId,
+            --         h.`server_mac` AS serverMac,
+            h.`name`,
+            h.`location`,
+            h.`longitude`,
+            h.`latitude`
+            --         sa.`area_name` AS areaName,
+--             sa.`full_name` AS fullName
+        FROM `cr_appointment` a
+        --             LEFT JOIN `cr_user` u ON a.`user_id` = u.`id`
+        LEFT JOIN `cr_user` d ON d.`id` = a.`doctor_id` AND d.`flag` = 1 <!-- flag用户类型(0:普通用户,1:医生) -->
+        LEFT JOIN `cr_appointment_time` att ON att.`id` = a.`appointment_time_id` AND att.`enable` = 1 AND att.`status` = 1
+        LEFT JOIN `cr_house` h ON h.`id` = a.`house_id`
+--         LEFT JOIN `cr_sys_area` sa ON sa.`area_code` =  h.`area_id`
+        WHERE a.`id` = #{appointmentId}
+    </select>
+
+    <!-- 用户查看预约列表 -->
+    <select id="selectAppointmentList" parameterType="com.users.modules.user.requestBody.crAppointment.AppointmentListReqBody"
+            resultType="com.users.modules.user.responseBody.crAppointment.AppointmentListResBody">
+        SELECT
+            a.`id`,
+            a.`user_id` AS userId,
+            a.`doctor_id` AS doctorId,
+            a.`house_id` AS houseId,
+            a.`appointment_time_id` AS appointmentTimeId,
+            a.`cause`,
+            a.`consult_price` AS consultPrice,
+            a.`status`,
+--             a.`prescription_id` AS prescriptionId,
+            a.`express_id` AS expressId,
+            a.`sum_price` AS sumPrice,
+            a.`score`,
+            a.`ex_status` AS exStatus,
+            a.`again_status` AS againStatus,
+            a.`appointment_id` AS appointmentId,
+            a.`date` AS createTime,
+            a.`update_time` AS updateTime,
+    --         u.`user_name` AS userName,
+            d.`user_name` AS doctorName,
+            <!--数据库date：2019-05-15，返回map：1557849600000，返回实体类Date：1557849600000，返回实体类String：2019-05-15-->
+            att.`date` AS timeDate,
+            <!--数据库date：2019-05-15，返回map：2019-05-15，返回实体类Date：1557849600000，返回实体类String：2019-05-15-->
+            --  DATE_FORMAT(att.`date`, '%Y-%m-%d') AS timeDate,
+            att.`time_slot` AS timeSlot,
+    --         h.`pub_server_ip` AS pubServerIp,
+    --         h.`lan_server_ip` AS lanServerIp,
+    --         h.`area_id` AS areaId,
+    --         h.`server_mac` AS serverMac,
+            h.`name`,
+            h.`location`,
+            h.`longitude`,
+            h.`latitude`
+    --         sa.`area_name` AS areaName,
+--             sa.`full_name` AS fullName
+        FROM `cr_appointment` a
+--             LEFT JOIN `cr_user` u ON a.`user_id` = u.`id`
+            LEFT JOIN `cr_user` d ON d.`id` = a.`doctor_id` AND d.`flag` = 1 <!-- flag用户类型(0:普通用户,1:医生) -->
+            LEFT JOIN `cr_appointment_time` att ON att.`id` = a.`appointment_time_id` AND att.`enable` = 1 AND att.`status` = 1
+            LEFT JOIN `cr_house` h ON h.`id` = a.`house_id`
+--             LEFT JOIN `cr_sys_area` sa ON sa.`area_code` =  h.`area_id`
+        WHERE a.`user_id` = #{userId}
+--           AND a.`status` != 0 AND a.`status` != 5
+          AND a.`status` IN (1,2,3)
+        <!--按预约时间升序-->
+--         ORDER BY a.`appointment_time_id` ASC
+        <!--按创建时间降序-->
+        ORDER BY a.`date` DESC
+    </select>
+
+    <!-- 用户查看历史预约列表 -->
+    <select id="selectAppointmentHistoryList" parameterType="com.users.modules.user.requestBody.crAppointment.AppointmentHistoryListReqBody"
+            resultType="com.users.modules.user.responseBody.crAppointment.AppointmentHistoryListResBody">
+        SELECT
+            a.`id`,
+            a.`user_id` AS userId,
+            a.`doctor_id` AS doctorId,
+            a.`house_id` AS houseId,
+            a.`appointment_time_id` AS appointmentTimeId,
+            a.`cause`,
+            a.`consult_price` AS consultPrice,
+            a.`status`,
+--             a.`prescription_id` AS prescriptionId,
+            a.`express_id` AS expressId,
+            a.`sum_price` AS sumPrice,
+            a.`score`,
+            a.`ex_status` AS exStatus,
+            a.`again_status` AS againStatus,
+            a.`appointment_id` AS appointmentId,
+            a.`date` AS createTime,
+            a.`update_time` AS updateTime,
+            --         u.`user_name` AS userName,
+            d.`user_name` AS doctorName,
+            <!--数据库date：2019-05-15，返回map：1557849600000，返回实体类Date：1557849600000，返回实体类String：2019-05-15-->
+            att.`date` AS timeDate,
+            <!--数据库date：2019-05-15，返回map：2019-05-15，返回实体类Date：1557849600000，返回实体类String：2019-05-15-->
+            --  DATE_FORMAT(att.`date`, '%Y-%m-%d') AS timeDate,
+            att.`time_slot` AS timeSlot,
+            --         h.`pub_server_ip` AS pubServerIp,
+            --         h.`lan_server_ip` AS lanServerIp,
+            --         h.`area_id` AS areaId,
+            --         h.`server_mac` AS serverMac,
+            h.`name`,
+            h.`location`,
+            h.`longitude`,
+            h.`latitude`
+            --         sa.`area_name` AS areaName,
+            --             sa.`full_name` AS fullName
+        FROM `cr_appointment` a
+        --             LEFT JOIN `cr_user` u ON a.`user_id` = u.`id`
+        LEFT JOIN `cr_user` d ON d.`id` = a.`doctor_id` AND d.`flag` = 1 <!-- flag用户类型(0:普通用户,1:医生) -->
+        LEFT JOIN `cr_appointment_time` att ON att.`id` = a.`appointment_time_id` AND att.`enable` = 1 AND att.`status` = 1
+        LEFT JOIN `cr_house` h ON h.`id` = a.`house_id`
+--         LEFT JOIN `cr_sys_area` sa ON sa.`area_code` =  h.`area_id`
+        WHERE a.`user_id` = #{userId}
+--           AND (a.`status` = 0 OR a.`status` = 5)
+          AND a.`status` IN (0,4,5)
+        <!--按预约时间升序-->
+--         ORDER BY a.`appointment_time_id` ASC
+        <!--按创建时间降序-->
+        ORDER BY a.`date` DESC
+    </select>
+
+    <!-- 根据医生编号查询医生信息 -->
+    <select id="selectDoctorInfoByDoctorId" parameterType="java.lang.Long"
+            resultType="com.users.modules.user.responseBody.crAppointment.DoctorInfoByIdResBody">
+        SELECT
+        d.`id`,
+        d.`doctor_id` AS doctorId,
+        d.`hospital`,
+        d.`section`,
+        d.`level`,
+        d.`forte`,
+        d.`introduce`,
+        d.`consult_price` AS consultPrice,
+        d.`star_class` AS starClass,
+        d.`patient_num` AS patientNum,
+        d.`praise_rate` AS praiseRate,
+        -- d.`create_time` AS createTime,
+        -- d.`update_time` AS updateTime,
+        u.`user_name` AS doctorName,
+        u.`head_pic` AS headPic
+        FROM
+        `cr_doctor_info` d
+        LEFT JOIN `cr_user` u ON u.`id` = d.`doctor_id` AND u.`flag` = 1 <!-- flag用户类型(0:普通用户,1:医生) -->
+        WHERE d.`doctor_id` = #{doctorId}
+    </select>
+
+    <!-- 根据患者编号查询我的医生 -->
+    <select id="selectDoctorInfoList" parameterType="com.users.modules.user.requestBody.crAppointment.DoctorInfoListReqBody"
+            resultType="com.users.modules.user.responseBody.crAppointment.DoctorInfoByUserIdResBody">
+        SELECT
+        d.`id`,
+        d.`doctor_id` AS doctorId,
+        d.`hospital`,
+        d.`section`,
+        d.`level`,
+        d.`forte`,
+        d.`introduce`,
+        d.`consult_price` AS consultPrice,
+        d.`star_class` AS starClass,
+        d.`patient_num` AS patientNum,
+        d.`praise_rate` AS praiseRate,
+        -- d.`create_time` AS createTime,
+        -- d.`update_time` AS updateTime,
+        u.`user_name` AS doctorName,
+        u.`head_pic` AS headPic
+        FROM
+        `cr_doctor_info` d
+        LEFT JOIN `cr_user` u ON u.`id` = d.`doctor_id` AND u.`flag` = 1 <!-- flag用户类型(0:普通用户,1:医生) -->
+        WHERE
+        EXISTS (
+        SELECT DISTINCT
+        a.`doctor_id` AS doctorId
+        FROM
+        `cr_appointment` AS a
+        WHERE
+        a.`user_id` = #{userId}
+        AND a.`doctor_id` = d.`doctor_id`
+        )
+        ORDER BY d.`praise_rate` DESC
+    </select>
+
+    <!--根据处方ID查询处方-->
+    <select id="selectPrescriptionById" parameterType="java.lang.Long"
+            resultType="com.users.modules.user.responseBody.crAppointment.PrescriptionByIdResBody">
+        SELECT
+            p.`id`,
+            p.`cause`,
+            p.`diagnosis`,
+            p.`composed`,
+            p.`usage_mode` AS usageMode,
+            p.`efficacy`,
+            p.`appointment_id` AS appointmentId,
+            p.`doctor_id` AS doctorId,
+            p.`user_id` AS userId,
+            p.`is_distribution` as isDistribution,
+            p.`price`,
+            p.`link_url` AS linkUrl,
+            p.`create_date` AS createDate,
+            p.`update_date` AS updateDate,
+            d.`hospital`,
+            d.`section`,
+            d.`level`,
+            u.`user_name` AS doctorName
+        FROM
+          `cr_prescription` p
+        LEFT JOIN `cr_doctor_info` d ON d.`id` = p.`doctor_id`
+        LEFT JOIN `cr_user` u ON u.`id` = p.`doctor_id` AND u.`flag` = 1 <!-- flag用户类型(0:普通用户,1:医生) -->
+        WHERE p.`id` = #{prescriptionId}
+    </select>
+
+    <!--根据患者编号查询我的处方-->
+    <select id="selectPrescriptionList" parameterType="com.users.modules.user.requestBody.crAppointment.PrescriptionListReqBody"
+            resultType="com.users.modules.user.responseBody.crAppointment.PrescriptionByUserIdResBody">
+        SELECT
+            p.`id`,
+            p.`cause`,
+            p.`diagnosis`,
+            p.`composed`,
+            p.`usage_mode` AS usageMode,
+            p.`efficacy`,
+            p.`appointment_id` AS appointmentId,
+            p.`doctor_id` AS doctorId,
+            p.`user_id` AS userId,
+            p.`is_distribution` as isDistribution,
+            p.`price`,
+            p.`link_url` AS linkUrl,
+            p.`create_date` AS createDate,
+            p.`update_date` AS updateDate,
+            d.`hospital`,
+            d.`section`,
+            d.`level`,
+            u.`user_name` AS doctorName
+        FROM
+          `cr_prescription` p
+        LEFT JOIN `cr_doctor_info` d ON d.`id` = p.`doctor_id`
+        LEFT JOIN `cr_user` u ON u.`id` = p.`doctor_id` AND u.`flag` = 1 <!-- flag用户类型(0:普通用户,1:医生) -->
+        WHERE p.`user_id` = #{userId}
+        ORDER BY p.`create_date` DESC
+    </select>
+
+</mapper>

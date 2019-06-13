@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.users.modules.mapper.primary.user.CrAppointmentMapper">
+  <resultMap id="BaseResultMap" type="com.common.entity.user.CrAppointment">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="doctor_id" jdbcType="BIGINT" property="doctorId" />
+    <result column="house_id" jdbcType="BIGINT" property="houseId" />
+    <result column="appointment_time_id" jdbcType="BIGINT" property="appointmentTimeId" />
+    <result column="cause" jdbcType="VARCHAR" property="cause" />
+    <result column="consult_price" jdbcType="DECIMAL" property="consultPrice" />
+    <result column="status" jdbcType="CHAR" property="status" />
+    <result column="prescription_id" jdbcType="BIGINT" property="prescriptionId" />
+    <result column="express_id" jdbcType="BIGINT" property="expressId" />
+    <result column="sum_price" jdbcType="DECIMAL" property="sumPrice" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="ex_status" jdbcType="INTEGER" property="exStatus" />
+    <result column="again_status" jdbcType="BIT" property="againStatus" />
+    <result column="appointment_id" jdbcType="BIGINT" property="appointmentId" />
+    <result column="date" jdbcType="BIGINT" property="date" />
+    <result column="update_time" jdbcType="BIGINT" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, user_id, doctor_id, house_id, appointment_time_id, cause, consult_price, `status`,
+    prescription_id, express_id, sum_price, score, ex_status, again_status, appointment_id,
+    `date`, update_time
+  </sql>
+  <select id="selectByExample" parameterType="com.common.entity.user.CrAppointmentExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from cr_appointment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null">
+      <if test="offset != null">
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null">
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from cr_appointment
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from cr_appointment
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.common.entity.user.CrAppointmentExample">
+    delete from cr_appointment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.common.entity.user.CrAppointment">
+    insert into cr_appointment (id, user_id, doctor_id,
+      house_id, appointment_time_id, cause,
+      consult_price, `status`, prescription_id,
+      express_id, sum_price, score,
+      ex_status, again_status, appointment_id,
+      `date`, update_time)
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{doctorId,jdbcType=BIGINT},
+      #{houseId,jdbcType=BIGINT}, #{appointmentTimeId,jdbcType=BIGINT}, #{cause,jdbcType=VARCHAR},
+      #{consultPrice,jdbcType=DECIMAL}, #{status,jdbcType=CHAR}, #{prescriptionId,jdbcType=BIGINT},
+      #{expressId,jdbcType=BIGINT}, #{sumPrice,jdbcType=DECIMAL}, #{score,jdbcType=INTEGER},
+      #{exStatus,jdbcType=INTEGER}, #{againStatus,jdbcType=BIT}, #{appointmentId,jdbcType=BIGINT},
+      #{date,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.common.entity.user.CrAppointment">
+    insert into cr_appointment
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="doctorId != null">
+        doctor_id,
+      </if>
+      <if test="houseId != null">
+        house_id,
+      </if>
+      <if test="appointmentTimeId != null">
+        appointment_time_id,
+      </if>
+      <if test="cause != null">
+        cause,
+      </if>
+      <if test="consultPrice != null">
+        consult_price,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="prescriptionId != null">
+        prescription_id,
+      </if>
+      <if test="expressId != null">
+        express_id,
+      </if>
+      <if test="sumPrice != null">
+        sum_price,
+      </if>
+      <if test="score != null">
+        score,
+      </if>
+      <if test="exStatus != null">
+        ex_status,
+      </if>
+      <if test="againStatus != null">
+        again_status,
+      </if>
+      <if test="appointmentId != null">
+        appointment_id,
+      </if>
+      <if test="date != null">
+        `date`,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="doctorId != null">
+        #{doctorId,jdbcType=BIGINT},
+      </if>
+      <if test="houseId != null">
+        #{houseId,jdbcType=BIGINT},
+      </if>
+      <if test="appointmentTimeId != null">
+        #{appointmentTimeId,jdbcType=BIGINT},
+      </if>
+      <if test="cause != null">
+        #{cause,jdbcType=VARCHAR},
+      </if>
+      <if test="consultPrice != null">
+        #{consultPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="prescriptionId != null">
+        #{prescriptionId,jdbcType=BIGINT},
+      </if>
+      <if test="expressId != null">
+        #{expressId,jdbcType=BIGINT},
+      </if>
+      <if test="sumPrice != null">
+        #{sumPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="score != null">
+        #{score,jdbcType=INTEGER},
+      </if>
+      <if test="exStatus != null">
+        #{exStatus,jdbcType=INTEGER},
+      </if>
+      <if test="againStatus != null">
+        #{againStatus,jdbcType=BIT},
+      </if>
+      <if test="appointmentId != null">
+        #{appointmentId,jdbcType=BIGINT},
+      </if>
+      <if test="date != null">
+        #{date,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.common.entity.user.CrAppointmentExample" resultType="java.lang.Long">
+    select count(*) from cr_appointment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update cr_appointment
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=BIGINT},
+      </if>
+      <if test="record.doctorId != null">
+        doctor_id = #{record.doctorId,jdbcType=BIGINT},
+      </if>
+      <if test="record.houseId != null">
+        house_id = #{record.houseId,jdbcType=BIGINT},
+      </if>
+      <if test="record.appointmentTimeId != null">
+        appointment_time_id = #{record.appointmentTimeId,jdbcType=BIGINT},
+      </if>
+      <if test="record.cause != null">
+        cause = #{record.cause,jdbcType=VARCHAR},
+      </if>
+      <if test="record.consultPrice != null">
+        consult_price = #{record.consultPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.status != null">
+        `status` = #{record.status,jdbcType=CHAR},
+      </if>
+      <if test="record.prescriptionId != null">
+        prescription_id = #{record.prescriptionId,jdbcType=BIGINT},
+      </if>
+      <if test="record.expressId != null">
+        express_id = #{record.expressId,jdbcType=BIGINT},
+      </if>
+      <if test="record.sumPrice != null">
+        sum_price = #{record.sumPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.score != null">
+        score = #{record.score,jdbcType=INTEGER},
+      </if>
+      <if test="record.exStatus != null">
+        ex_status = #{record.exStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.againStatus != null">
+        again_status = #{record.againStatus,jdbcType=BIT},
+      </if>
+      <if test="record.appointmentId != null">
+        appointment_id = #{record.appointmentId,jdbcType=BIGINT},
+      </if>
+      <if test="record.date != null">
+        `date` = #{record.date,jdbcType=BIGINT},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=BIGINT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update cr_appointment
+    set id = #{record.id,jdbcType=BIGINT},
+    user_id = #{record.userId,jdbcType=BIGINT},
+    doctor_id = #{record.doctorId,jdbcType=BIGINT},
+    house_id = #{record.houseId,jdbcType=BIGINT},
+    appointment_time_id = #{record.appointmentTimeId,jdbcType=BIGINT},
+    cause = #{record.cause,jdbcType=VARCHAR},
+    consult_price = #{record.consultPrice,jdbcType=DECIMAL},
+    `status` = #{record.status,jdbcType=CHAR},
+    prescription_id = #{record.prescriptionId,jdbcType=BIGINT},
+    express_id = #{record.expressId,jdbcType=BIGINT},
+    sum_price = #{record.sumPrice,jdbcType=DECIMAL},
+    score = #{record.score,jdbcType=INTEGER},
+    ex_status = #{record.exStatus,jdbcType=INTEGER},
+    again_status = #{record.againStatus,jdbcType=BIT},
+    appointment_id = #{record.appointmentId,jdbcType=BIGINT},
+    `date` = #{record.date,jdbcType=BIGINT},
+    update_time = #{record.updateTime,jdbcType=BIGINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.common.entity.user.CrAppointment">
+    update cr_appointment
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="doctorId != null">
+        doctor_id = #{doctorId,jdbcType=BIGINT},
+      </if>
+      <if test="houseId != null">
+        house_id = #{houseId,jdbcType=BIGINT},
+      </if>
+      <if test="appointmentTimeId != null">
+        appointment_time_id = #{appointmentTimeId,jdbcType=BIGINT},
+      </if>
+      <if test="cause != null">
+        cause = #{cause,jdbcType=VARCHAR},
+      </if>
+      <if test="consultPrice != null">
+        consult_price = #{consultPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=CHAR},
+      </if>
+      <if test="prescriptionId != null">
+        prescription_id = #{prescriptionId,jdbcType=BIGINT},
+      </if>
+      <if test="expressId != null">
+        express_id = #{expressId,jdbcType=BIGINT},
+      </if>
+      <if test="sumPrice != null">
+        sum_price = #{sumPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="score != null">
+        score = #{score,jdbcType=INTEGER},
+      </if>
+      <if test="exStatus != null">
+        ex_status = #{exStatus,jdbcType=INTEGER},
+      </if>
+      <if test="againStatus != null">
+        again_status = #{againStatus,jdbcType=BIT},
+      </if>
+      <if test="appointmentId != null">
+        appointment_id = #{appointmentId,jdbcType=BIGINT},
+      </if>
+      <if test="date != null">
+        `date` = #{date,jdbcType=BIGINT},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.common.entity.user.CrAppointment">
+    update cr_appointment
+    set user_id = #{userId,jdbcType=BIGINT},
+      doctor_id = #{doctorId,jdbcType=BIGINT},
+      house_id = #{houseId,jdbcType=BIGINT},
+      appointment_time_id = #{appointmentTimeId,jdbcType=BIGINT},
+      cause = #{cause,jdbcType=VARCHAR},
+      consult_price = #{consultPrice,jdbcType=DECIMAL},
+      `status` = #{status,jdbcType=CHAR},
+      prescription_id = #{prescriptionId,jdbcType=BIGINT},
+      express_id = #{expressId,jdbcType=BIGINT},
+      sum_price = #{sumPrice,jdbcType=DECIMAL},
+      score = #{score,jdbcType=INTEGER},
+      ex_status = #{exStatus,jdbcType=INTEGER},
+      again_status = #{againStatus,jdbcType=BIT},
+      appointment_id = #{appointmentId,jdbcType=BIGINT},
+      `date` = #{date,jdbcType=BIGINT},
+      update_time = #{updateTime,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.users.modules.mapper.primary.user.CrDoctorCommentDAO">
+  <resultMap id="BaseResultMap" type="com.common.entity.user.CrDoctorComment">
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="create_time" jdbcType="BIGINT" property="createTime" />
+    <result column="author_id" jdbcType="BIGINT" property="authorId" />
+    <result column="doctor_id" jdbcType="BIGINT" property="doctorId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="ip" jdbcType="VARCHAR" property="ip" />
+    <result column="parent_id" jdbcType="BIGINT" property="parentId" />
+    <result column="good_cnt" jdbcType="INTEGER" property="goodCnt" />
+    <result column="reply_cnt" jdbcType="INTEGER" property="replyCnt" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, content, create_time, author_id, doctor_id, `status`, ip, parent_id, good_cnt,
+    reply_cnt
+  </sql>
+  <select id="selectByExample" parameterType="com.common.entity.user.CrDoctorCommentExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from cr_doctor_comment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null">
+      <if test="offset != null">
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null">
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.common.entity.user.CrDoctorCommentExample">
+    delete from cr_doctor_comment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.common.entity.user.CrDoctorComment">
+    insert into cr_doctor_comment (id, content, create_time,
+    author_id, doctor_id, `status`,
+    ip, parent_id, good_cnt,
+    reply_cnt)
+    values (#{id,jdbcType=BIGINT}, #{content,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT},
+    #{authorId,jdbcType=BIGINT}, #{doctorId,jdbcType=BIGINT}, #{status,jdbcType=INTEGER},
+    #{ip,jdbcType=VARCHAR}, #{parentId,jdbcType=BIGINT}, #{goodCnt,jdbcType=INTEGER},
+    #{replyCnt,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.common.entity.user.CrDoctorComment">
+    insert into cr_doctor_comment
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="authorId != null">
+        author_id,
+      </if>
+      <if test="doctorId != null">
+        doctor_id,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="ip != null">
+        ip,
+      </if>
+      <if test="parentId != null">
+        parent_id,
+      </if>
+      <if test="goodCnt != null">
+        good_cnt,
+      </if>
+      <if test="replyCnt != null">
+        reply_cnt,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=BIGINT},
+      </if>
+      <if test="authorId != null">
+        #{authorId,jdbcType=BIGINT},
+      </if>
+      <if test="doctorId != null">
+        #{doctorId,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="ip != null">
+        #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="parentId != null">
+        #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="goodCnt != null">
+        #{goodCnt,jdbcType=INTEGER},
+      </if>
+      <if test="replyCnt != null">
+        #{replyCnt,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.common.entity.user.CrDoctorCommentExample" resultType="java.lang.Long">
+    select count(*) from cr_doctor_comment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update cr_doctor_comment
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.content != null">
+        content = #{record.content,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=BIGINT},
+      </if>
+      <if test="record.authorId != null">
+        author_id = #{record.authorId,jdbcType=BIGINT},
+      </if>
+      <if test="record.doctorId != null">
+        doctor_id = #{record.doctorId,jdbcType=BIGINT},
+      </if>
+      <if test="record.status != null">
+        `status` = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.ip != null">
+        ip = #{record.ip,jdbcType=VARCHAR},
+      </if>
+      <if test="record.parentId != null">
+        parent_id = #{record.parentId,jdbcType=BIGINT},
+      </if>
+      <if test="record.goodCnt != null">
+        good_cnt = #{record.goodCnt,jdbcType=INTEGER},
+      </if>
+      <if test="record.replyCnt != null">
+        reply_cnt = #{record.replyCnt,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update cr_doctor_comment
+    set id = #{record.id,jdbcType=BIGINT},
+    content = #{record.content,jdbcType=VARCHAR},
+    create_time = #{record.createTime,jdbcType=BIGINT},
+    author_id = #{record.authorId,jdbcType=BIGINT},
+    doctor_id = #{record.doctorId,jdbcType=BIGINT},
+    `status` = #{record.status,jdbcType=INTEGER},
+    ip = #{record.ip,jdbcType=VARCHAR},
+    parent_id = #{record.parentId,jdbcType=BIGINT},
+    good_cnt = #{record.goodCnt,jdbcType=INTEGER},
+    reply_cnt = #{record.replyCnt,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+</mapper>

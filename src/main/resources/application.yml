@@ -1,0 +1,123 @@
+server:
+  port: 8003
+  #logs
+  tomcat:
+    uri-encoding: utf-8
+    max-threads: 1000
+    max-connections: 900
+    min-spare-threads: 100
+    accesslog:
+      pattern: '%{X-Forwarded-For}i %h %l %u %t "%r" %s %b %T'
+      enabled: true
+      directory: ${user.dir}/logs
+      prefix: access.${spring.application.name}.${HOST:127.0.0.1}.${server.port:8080}
+
+#log
+logging:
+  file: ${user.dir}/log/${spring.application.name}_log.log
+  level:
+    com:
+      users:
+        modules:
+          mapper: debug
+#          user:
+#            controller: debug
+#            service:
+#              impl: debug
+#            helper: warn
+
+#Eureka
+#eureka:
+#  instance:
+#    hostname: localhost
+#  client:
+#    register-with-eureka: true
+#    fetch-registry: true
+#    serviceUrl:
+#      defaultZone: http://localhost:8000/eureka
+
+spring:
+  application:
+    name: user
+  #MySQL.
+  datasource:
+    primary:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://192.168.1.14:3306/cr?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true
+      username: root
+      password: 123
+      maxWait: 60000
+    secondary:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: jdbc:mysql://192.168.1.14:3306/cr_news?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true
+      username: root
+      password: 123
+      maxWait: 60000
+    #    driver-class-name: com.mysql.jdbc.Driver
+    #    #    url: jdbc:mysql://47.105.161.48:3306/cr?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    #    #    password: sZ!crun123
+    #    url: jdbc:mysql://192.168.1.14:3306/cr?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    #    password: 123
+    #    #    url: jdbc:mysql://localhost:3306/cr?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    #    #    password: lyl610
+    #    username: root
+
+  #Redis
+  redis:
+    database: 0
+    #    host: 120.78.143.252
+    host: 192.168.1.14
+    port: 6379
+    password: 123456
+    timeout: 0
+
+  #页面跳转
+  thymeleaf:
+    prefix: classpath:/static/
+  #    prefix: classpath:/templates/
+
+  #热部署
+#  thymeleaf:
+#    cache: false
+
+  #Kafka
+  kafka:
+    #bootstrap-servers: 127.0.0.1:9092,127.0.0.1:9093,127.0.0.1:9094
+    bootstrap-servers: 192.168.1.14:9092
+    consumer:
+      auto-commit-interval: 100
+      auto-offset-reset: latest
+      enable-auto-commit: true
+      group-id: crYuyibaTest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      batch-size: 10000
+      buffer-memory: 134217728
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      retries: 0
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    listener:
+      concurrency: 3
+    template:
+      default-topic: test
+
+#OSS
+aliyun:
+  oss:
+    endpoint: oss-cn-shenzhen.aliyuncs.com
+    accessKeyID: LTAIxKsDiZWFoUzP
+    accessKeySecret: 2y6NJTnSiY5iiOBLTmeMEEVB5DRC1z
+    bucketNameOne: crimgs
+    crimgsDirIcon: icon
+    #失效时间100年：1000*3600*24*365*100
+    expire: 18273873920
+
+#weixin
+wechat:
+  appId: wx834b8fe995722007
+  secret: 1c23a0cee831067023e10c36f14928b0
+#jpush
+jpush:
+  appKey: 206f11da9e7c67d09f5ff763Master
+  masterSecret: 08ce343b4be540034ea1b5e3

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+</head>
+<body>
+<div style="margin:0 1.3em;">
+    <div class="commentforme">
+        <div class="piece" th:each="item,itemStat:${commentModel.list}">
+            <div id="liuyandianzan">
+                <img src="https://crimgs.oss-cn-shenzhen.aliyuncs.com/icon/2019-05-29/6d8ed582cf4f411e98ae9e76893131ff-icon_reviews.png?Expires=1577372232&OSSAccessKeyId=LTAIxKsDiZWFoUzP&Signature=guC3Iwo4woG77T08VmD8RNFZ4wc%3D" width="20" height="20" align="top">
+                <span id="reviews" th:text="${item.replyCnt}"></span>
+                <span id="space3"></span>
+                <img src="https://crimgs.oss-cn-shenzhen.aliyuncs.com/icon/2019-05-29/9939d4c79a764bc9aac2a0b56e24507b-icon_digg.png?Expires=1577372204&OSSAccessKeyId=LTAIxKsDiZWFoUzP&Signature=fxudJ9Y8Zb4R7QM1HluZI8nYu8Y%3D" width="20" height="20" align="top">
+                <span id="digg" th:text="${item.goodCnt}"></span>
+            </div>
+            <div id="nav">
+                <img th:src="${item.author.headPic}" width="50" height="60" >
+            </div>
+            <div id="title">
+                <span id="name" style="font-size: 16px" th:text="${item.author.userName}"></span>
+                <span id="space1"></span>
+                <span id="time" th:text="${#dates.format(item.createTime,'yyyy-MM-dd')}"></span>
+            </div>
+            <div id="content">
+                <p id="comment" th:text="${item.content}"></p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<style type="text/css">
+    html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        position: fixed;
+        overflow-y:scroll;
+        background-color: #F2FFF8;
+    }
+        *{
+            font-size: 14px;
+        }
+    #liuyandianzan {
+        float: right;
+        width: 100px;
+        margin-right: -1em;
+    }
+
+    #nav {
+        float: left;
+        height: 4rem;
+        border-radius: 100%;
+        background-color: #F2FFF8;
+        width: 55px;
+    }
+
+    #nav img {
+        border-radius: 50%;
+    }
+
+    #space1 {
+        display: inline-block;
+        width: 1%;
+    }
+
+    #space3 {
+        display: inline-block;
+        width: 3%;
+    }
+
+    #name {
+        font-weight: bold;
+        font-family: Microsoft YaHei;
+        color: #A4A4A4;
+    }
+
+    #time {
+        color: #A4A4A4;
+    }
+
+    #reviews {
+        color: #A4A4A4;
+    }
+
+    #digg {
+        color: #A4A4A4;
+    }
+
+    #comment {
+        color: #A4A4A4;
+        font-family: Microsoft YaHei;
+    }
+
+    #title {
+        width: 100%;
+        float: none;
+    }
+
+    .piece {
+        margin-bottom: 5%;
+        padding-top: 10px;
+    }
+
+    .commentforme {
+        background-color: #F2FFF8;
+        width: 100%;
+    }
+</style>
+</html>

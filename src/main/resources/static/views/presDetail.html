@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+</head>
+<body style="width: 1000px;">
+<!-- 挂号单信息 -->
+<div style="width: 100%;height:226px;background-color:rgba(250,250,250,1) ">
+    <div style="position: relative;width: 950px;margin-left: 25px">
+        <div style="position: relative;display: inline-block;width: 500px;color: #139652;float: left" class="p3">
+            挂号单:#<span th:text="${presModel.detail.appointmentId}"/>
+        </div>
+        <div style="position: relative;display: inline-block;width: 300px;float: right;" class="p3">
+            生成日期:<span th:text="${#dates.format(presModel.detail.createDate,'yyyy-MM-dd')}" style="color: #139652;"/>
+        </div>
+        <!-- 医生信息 -->
+        <div style="position: relative; float: left; width: 100%;margin-top: 49px">
+            <img th:src="${presModel.doctor.headPic}" width="96px" height="96px" style="float: left">
+            <div style="height: 96px;position: relative;display: inline-block;margin-left: 2em">
+                <p  class="p3" style="display: inline-block;margin-top: 0">接诊医生:<span th:text="${presModel.doctor.doctorName}" style="font-weight: 500"></span></p><br/>
+                <p  class="p3" style="display: inline-block;margin-top: 0" th:text="${presModel.doctor.introduce}"></p>
+            </div>
+        </div>
+    </div>
+
+</div>
+<h3 style="color: #12816E" class="p1">病情:</h3>
+<p  class="p2" th:utext="${presModel.detail.cause}"></p>
+<h3 style="color: #12816E" class="p1">诊断:</h3>
+<p  class="p2" th:utext="${presModel.detail.diagnosis}"></p>
+<h3 style="color: #12816E" class="p1">药方:</h3>
+<p  class="p2" th:utext="${presModel.detail.composed}"></p>
+<!-- 底部按钮 -->
+<div class="btn_group">
+    <button class="btn btn_good" onclick="alert('暂未开放')">自行购药</button>
+    <button class="btn btn_money" onclick="alert('暂未开放')" style="margin-left: 1em">平台配送</button>
+</div>
+</body>
+<style>
+    html, body {
+        width:100%;
+        height: 100%;
+        overflow-x: hidden;
+        margin: 0;
+        position:fixed}
+    .p1{
+        font-size: 36px;
+    }
+    .p2{
+        font-size: 30px;
+    }
+    .p3{
+        font-size: 28px;
+    }
+    .btn_group{
+        width: 600px;
+        margin: auto;
+    }
+    .btn {
+        width: 279px;
+        height: 91px;
+        border-radius: 50px;
+        color: white;
+        font-size: 30px;
+    }
+
+    .btn_good {
+        background-color: #138997;
+    }
+
+    .btn_money {
+        background-color: #139652;
+    }
+</style>
+</html>
